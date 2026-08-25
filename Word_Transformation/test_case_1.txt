@@ -5,5 +5,4 @@ cot
 cog
 dog
 *
-
 cat cat

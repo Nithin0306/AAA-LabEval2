@@ -6,7 +6,6 @@ abb
 bbb
 bab
 *
-
 aaa bbb
 
 cat
@@ -16,7 +15,6 @@ bed
 cad
 bad
 *
-
 cat bed
 
 cold
@@ -26,5 +24,4 @@ ward
 warm
 worm
 *
-
 cold warm

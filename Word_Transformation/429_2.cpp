@@ -62,13 +62,15 @@ int main() {
     for (int tc = 0; tc < T; tc++) {
 
         vector<string> words;
+        unordered_set<string> seen;
 
         // Read dictionary
         while (getline(cin, line)) {
             if (line == "*")
                 break;
 
-            words.push_back(line);
+            if (seen.insert(line).second)
+                words.push_back(line);
         }
 
         int n = words.size();

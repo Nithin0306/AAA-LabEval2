@@ -1,0 +1,30 @@
+3
+
+aaa
+aab
+abb
+bbb
+bab
+*
+
+aaa bbb
+
+cat
+bat
+bet
+bed
+cad
+bad
+*
+
+cat bed
+
+cold
+cord
+card
+ward
+warm
+worm
+*
+
+cold warm

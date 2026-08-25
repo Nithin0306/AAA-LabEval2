@@ -1,0 +1,11 @@
+1
+
+cat
+bat
+bet
+bed
+cad
+bad
+*
+
+cat bed

@@ -1,0 +1,9 @@
+1
+
+cat
+cot
+cog
+dog
+*
+
+cat cat

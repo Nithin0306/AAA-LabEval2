@@ -1,0 +1,6 @@
+3
+Y U A B 10
+M U A C 20
+Y B B D 5
+A A
+0

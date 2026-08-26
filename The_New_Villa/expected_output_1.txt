@@ -1,0 +1,11 @@
+Villa #1
+The problem can be solved in 9 steps:
+- Switch on light in room 2.
+- Move to room 2.
+- Switch on light in room 3.
+- Switch off light in room 1.
+- Move to room 3.
+- Switch on light in room 4.
+- Switch off light in room 2.
+- Move to room 4.
+- Switch off light in room 3.

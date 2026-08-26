@@ -1,0 +1,9 @@
+6
+Y B A B 5
+Y B A C 5
+M B D B 5
+M B D C 5
+Y B B E 5
+M B E D 5
+A D
+0

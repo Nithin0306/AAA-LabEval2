@@ -1,0 +1,7 @@
+4
+Y U A B 5
+Y U B C 5
+M U D C 3
+M U C B 2
+A D
+0

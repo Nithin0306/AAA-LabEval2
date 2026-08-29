@@ -9,3 +9,4 @@ The problem can be solved in 9 steps:
 - Switch off light in room 2.
 - Move to room 4.
 - Switch off light in room 3.
+

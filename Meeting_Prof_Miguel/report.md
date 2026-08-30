@@ -59,21 +59,16 @@ graphs (one per person), solved independently and then combined.
 
 | E | Impl 1 (Floyd-Warshall) | Impl 2 (Dijkstra) | Impl 3 (Bellman-Ford) |
 |---|---|---|---|
-| 5 | 2.39 | 1.59 | 1.28 |
-| 40 | 2.59 | 1.70 | 1.41 |
-| 100 | 3.06 | 2.31 | 1.95 |
-| 200 | 3.37 | 2.58 | 2.31 |
+| 5 | 5.74 | 3.77 | 3.84 |
+| 40 | 7.99 | 4.32 | 2.91 |
+| 100 | 8.72 | 5.47 | 4.90 |
+| 200 | 9.31 | 7.03 | 5.84 |
 
 **Observations:**
 
-- `10171_1` (Floyd-Warshall) rises slowly — it always performs V³ = 17,576
-  operations regardless of E. Its overhead comes from the dense matrix
-  initialisation and three nested loops.
-- `10171_2` (Dijkstra) grows with E because the priority queue processes more
-  edges. Efficient on sparse graphs, less so as E approaches V².
-- `10171_3` (Bellman-Ford) is the most E-sensitive — its O(V·E) inner loop
-  iterates over all edges V−1 times. The early-termination optimisation
-  limits this in practice.
+- `10171_1` (Floyd-Warshall) takes ~5.74–9.31 ms across 50 instances due to running $V^3 = 17,576$ inner-loop iterations per instance regardless of edge count.
+- `10171_2` (Dijkstra) scales with E (from 3.77 ms at E=5 to 7.03 ms at E=200) as priority queue insertions and distance relaxations increase with edge density.
+- `10171_3` (Bellman-Ford) remains competitive (3.84 ms to 5.84 ms) due to the early-termination flag, which stops edge relaxation passes as soon as distances stabilize.
 
 ---
 
@@ -87,17 +82,15 @@ graphs (one per person), solved independently and then combined.
 
 | V | Impl 1 (Floyd-Warshall) | Impl 2 (Dijkstra) | Impl 3 (Bellman-Ford) |
 |---|---|---|---|
-| 4 | 2.40 | 1.43 | 1.50 |
-| 10 | 2.91 | 1.45 | 1.55 |
-| 18 | 2.87 | 1.48 | 1.70 |
-| 26 | 2.86 | 1.84 | 1.75 |
+| 4 | 7.62 | 2.90 | 3.65 |
+| 10 | 7.69 | 4.54 | 4.36 |
+| 18 | 7.78 | 4.76 | 4.42 |
+| 26 | 8.97 | 5.19 | 4.52 |
 
 **Observations:**
 
-- Floyd-Warshall grows with V but its cubic cost is bounded — at V=26 the
-  cost is 17,576 operations, which is small in absolute terms.
-- Dijkstra and Bellman-Ford grow more slowly with V here because E = 3V
-  keeps the graph sparse. Their advantage is most visible on sparse graphs.
+- Floyd-Warshall (`10171_1`) exhibits higher constant overhead (~7.62–8.97 ms) because it initialises and computes full $26 \times 26$ distance matrices regardless of the active node set size $V$.
+- Dijkstra (`10171_2`) and Bellman-Ford (`10171_3`) only operate on active edges, keeping execution times under 5.2 ms even at $V=26$.
 
 ---
 
@@ -111,32 +104,20 @@ graphs (one per person), solved independently and then combined.
 
 | E | Impl 1 (Floyd-Warshall) | Impl 2 (Dijkstra) | Impl 3 (Bellman-Ford) |
 |---|---|---|---|
-| 5 | 3,780 | 3,868 | 3,776 |
-| 50 | 3,868 | 3,896 | 3,780 |
-| 200 | 3,820 | 3,784 | 3,980 |
+| 5 | 3,964 | 3,952 | 3,984 |
+| 50 | 3,864 | 3,992 | 3,848 |
+| 200 | 3,780 | 3,952 | 3,896 |
 
 **Observations:**
 
-- All three implementations show nearly flat memory usage because V is
-  capped at 26. The process baseline (~3.8 MB) dominates.
-- `10171_1` uses a fixed 26×26 matrix — memory is **constant** regardless
-  of E.
-- `10171_2` stores adjacency lists and `10171_3` stores an edge list — both
-  grow linearly with E, but the growth is negligible relative to process
-  overhead at this problem scale.
+- Peak RSS memory remains virtually identical across all algorithms (~3.78–3.99 MB). Since $V \le 26$, memory is dominated by binary startup and standard library overhead rather than graph dynamic allocations.
 
 ---
 
 ## Implementation Choice Implications
 
-**Choose `10171_1` (Floyd-Warshall)** when V is small and fixed and you want
-all-pairs shortest paths. The O(V³) is negligible at V ≤ 26; the matrix
-representation makes lookups O(1).
+**Choose `10171_1` (Floyd-Warshall)** when $V$ is small and fixed ($V \le 26$) and all-pairs shortest paths are required. Matrix lookup provides instant answer retrieval.
 
-**Choose `10171_2` (Dijkstra)** when the graph is sparse (E ≪ V²). Requires
-non-negative edge weights. Most efficient as E grows on sparse graphs.
+**Choose `10171_2` (Dijkstra)** for sparse graphs where $E \ll V^2$ and edge weights are non-negative.
 
-**Choose `10171_3` (Bellman-Ford)** when negative edge weights are possible
-(the problem uses non-negative costs but Bellman-Ford handles the general
-case). The early-termination optimisation makes it competitive with Dijkstra
-when graphs are sparse and many edges relax quickly.
+**Choose `10171_3` (Bellman-Ford)** when negative edge weights may exist or when simple edge-list structures are preferred. Early-termination keeps its empirical runtime comparable to Dijkstra on sparse graphs.

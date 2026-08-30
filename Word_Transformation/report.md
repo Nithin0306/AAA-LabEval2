@@ -62,19 +62,16 @@ Where **V** = dictionary size, **L** = word length, **E** = valid edges, **Q** =
 
 | V | Impl 1 | Impl 2 | Impl 3 |
 |---|---|---|---|
-| 10 | 1.56 | 1.38 | 1.41 |
-| 40 | 1.76 | 1.41 | 1.61 |
-| 80 | 2.17 | 1.40 | 1.62 |
-| 130 | 2.83 | 1.50 | 1.67 |
-| 200 | 4.12 | 1.88 | 1.90 |
+| 10 | 4.28 | 3.50 | 5.17 |
+| 40 | 2.96 | 4.07 | 3.48 |
+| 80 | 4.80 | 2.72 | 3.03 |
+| 130 | 7.76 | 3.96 | 4.77 |
+| 200 | 11.29 | 4.13 | 5.01 |
 
 **Observations:**
 
-- `429_1` rises clearly with V — at V=200 it takes 4.12 ms vs 1.56 ms at
-  V=10. Each BFS step rescans the entire dictionary, so cost grows as O(V²·L).
-- `429_2` and `429_3` remain comparatively flat because they amortise neighbour
-  lookup through a prebuilt structure. The graph construction is paid once per
-  test case and BFS traversal is then O(V+E).
+- `429_1` rises significantly with V — reaching 11.29 ms at V=200. Each BFS step rescans the entire dictionary, causing execution time to scale quadratically with dictionary size as $O(V^2 \cdot L)$.
+- `429_2` and `429_3` remain bounded around 3.5–5.0 ms because they amortise neighbour lookup through prebuilt structures. Once graph construction is paid, BFS traversal cost is strictly $O(V+E)$.
 
 ---
 
@@ -88,20 +85,17 @@ Where **V** = dictionary size, **L** = word length, **E** = valid edges, **Q** =
 
 | Q | Impl 1 | Impl 2 | Impl 3 |
 |---|---|---|---|
-| 1 | 1.63 | 1.61 | 1.59 |
-| 20 | 2.61 | 1.27 | 1.83 |
-| 80 | 6.81 | 1.34 | 2.30 |
-| 160 | 11.19 | 1.77 | 2.69 |
-| 200 | 12.69 | 1.58 | 3.01 |
+| 1 | 4.12 | 4.02 | 4.03 |
+| 20 | 8.68 | 3.78 | 4.48 |
+| 80 | 22.91 | 4.16 | 6.41 |
+| 160 | 36.80 | 3.97 | 8.11 |
+| 200 | 47.07 | 3.90 | 9.05 |
 
 **Observations:**
 
-- `429_1` scales linearly with Q — each query re-scans the full dictionary
-  during BFS. At Q=200 it takes 12.69 ms, nearly 8× the Q=1 baseline.
-- `429_2` is almost flat with increasing Q. The adjacency list is built once;
-  each BFS is O(V+E) with cheap indexed lookups.
-- `429_3` grows slowly — the pattern map avoids pairwise comparison but still
-  runs a fresh BFS per query.
+- `429_1` scales steeply and linearly with Q — each query re-scans the full dictionary during BFS. At Q=200, it takes 47.07 ms (over 11× the Q=1 baseline).
+- `429_2` stays flat (~3.8–4.1 ms) across all Q values. The graph construction overhead is paid once; subsequent queries perform fast $O(V+E)$ vector lookups.
+- `429_3` grows moderately to 9.05 ms at Q=200. Pattern lookups are fast, but running a full BFS per query still adds a minor linear growth factor.
 
 ---
 
@@ -111,26 +105,29 @@ Where **V** = dictionary size, **L** = word length, **E** = valid edges, **Q** =
 
 ![V vs Preprocessing](../analysis/results/429/v_vs_preptime.png)
 
+**Measured data (ms):**
+
+| V | Impl 1 | Impl 2 | Impl 3 |
+|---|---|---|---|
+| 10 | 3.80 | 3.65 | 3.66 |
+| 40 | 3.62 | 3.96 | 3.78 |
+| 80 | 3.70 | 3.72 | 4.20 |
+| 130 | 3.89 | 3.90 | 4.15 |
+| 200 | 4.55 | 4.04 | 4.23 |
+
 **Observations:**
 
-- With only one query, total time ≈ preprocessing cost + a single BFS.
-- `429_1` has no preprocessing — its entire cost is the BFS scan, which grows
-  as V increases.
-- `429_2` shows the O(V²·L) adjacency-list construction as V rises.
-- `429_3` stays nearly flat because its O(V·L) pattern-map build is linear
-  in V.
+- With Q=1, total runtime reflects process setup and upfront construction.
+- `429_1` has zero preprocessing cost, but its BFS search scales with V.
+- `429_2` builds an $O(V^2 \cdot L)$ adjacency list, taking ~4.04 ms at V=200.
+- `429_3` builds a wildcard map in $O(V \cdot L)$, showing smooth linear behavior.
 
 ---
 
 ## Implementation Choice Implications
 
-**Choose `429_1`** when the dictionary is small (V < 50) or queries are very
-few. No memory overhead, simplest to reason about.
+**Choose `429_1`** when the dictionary is small (V < 50) or queries are few (Q ≈ 1–5). It requires no additional memory structures and is simple to implement.
 
-**Choose `429_2`** when queries are many (Q is large) and dictionary is
-moderate. The graph is built once and reused per query; BFS is O(V+E).
+**Choose `429_2`** when processing many queries (large Q) on a fixed moderate dictionary. Prebuilding the adjacency list once makes per-query BFS runs extremely fast and independent of Q.
 
-**Choose `429_3`** when the dictionary is large. The O(V·L) pattern-map
-construction is asymptotically optimal and avoids the O(V²) pairwise scan.
-The Q-vs-time data confirms it scales better than Impl 1 at high Q while
-avoiding the heavy preprocessing of Impl 2.
+**Choose `429_3`** when the dictionary size V is large. The $O(V \cdot L)$ wildcard pattern-map construction avoids $O(V^2)$ all-pairs comparisons while offering far better multi-query scaling than `429_1`.

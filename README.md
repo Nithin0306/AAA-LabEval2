@@ -63,6 +63,8 @@ Each problem includes **three distinct C++ implementation strategies**, automate
   - `429_1.cpp`: On-the-fly $O(V \cdot L)$ pairwise scan per step.
   - `429_2.cpp`: $O(V^2 \cdot L)$ prebuilt adjacency list representation.
   - `429_3.cpp`: $O(V \cdot L)$ wildcard pattern map lookup (`h*t -> hot`).
+- **Empirical Results:**
+  - As query volume $Q$ increases to 200, `429_1` scales linearly up to **47.07 ms**, whereas `429_2` amortises graph construction to stay virtually flat (**3.90 ms**), and `429_3` grows moderately to **9.05 ms**.
 
 ### 2. UVa 10171 — Meeting Prof. Miguel (Weighted Graph)
 - **Problem Statement:** [`docs/p10171.pdf`](docs/p10171.pdf)
@@ -72,6 +74,8 @@ Each problem includes **three distinct C++ implementation strategies**, automate
   - `10171_1.cpp`: Floyd-Warshall algorithm ($O(V^3)$).
   - `10171_2.cpp`: Dijkstra's algorithm with priority queue ($O((V + E) \log V)$).
   - `10171_3.cpp`: Bellman-Ford algorithm with early termination ($O(V \cdot E)$).
+- **Empirical Results:**
+  - On sparse graphs ($E=5$), Dijkstra (**3.77 ms**) and Bellman-Ford with early termination (**3.84 ms**) outperform Floyd-Warshall (**5.74 ms** across 50 instances) because Floyd-Warshall always runs $V^3 = 17,576$ inner loop iterations regardless of edge density.
 
 ### 3. UVa 321 — The New Villa (Implicit Graph Mapping)
 - **Problem Statement:** [`docs/p321.pdf`](docs/p321.pdf)
@@ -81,6 +85,8 @@ Each problem includes **three distinct C++ implementation strategies**, automate
   - `321_1.cpp`: On-demand BFS using explicit `State` structs.
   - `321_2.cpp`: On-demand BFS using compact integer state encoding (`room * 2^R + mask`).
   - `321_3.cpp`: Prebuilt full explicit state-space adjacency graph prior to BFS traversal.
+- **Empirical Results:**
+  - At $R=10$ (10,240 potential states), `321_3` takes **7.90 ms** and **5.31 MB** RSS memory due to constructing edges for all states upfront, compared to `321_1` (**3.62 ms**, **4.09 MB**) which explores only reachable states on-demand.
 
 ---
 

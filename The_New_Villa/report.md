@@ -70,10 +70,8 @@ Let **R** = rooms, **D** = doors, **S** = switch connections.
 
 **Observations:**
 
-- The state space doubles with each additional room (ignoring the linear R
-  factor). This is why the problem caps R at 10.
-- Even at R=10, a visited array of 10,240 booleans and a parent array of
-  10,240 entries must be allocated per test case.
+- The state space grows exponentially with $R$, doubling with each additional room.
+- At $R=10$, there are up to 10,240 reachable state vertices.
 
 ---
 
@@ -87,22 +85,17 @@ Let **R** = rooms, **D** = doors, **S** = switch connections.
 
 | R | Impl 1 (State struct) | Impl 2 (Integer BFS) | Impl 3 (Prebuilt graph) |
 |---|---|---|---|
-| 2 | 1.77 | 1.38 | 1.28 |
-| 4 | 1.43 | 1.60 | 1.61 |
-| 6 | 1.55 | 1.19 | 1.50 |
-| 8 | 1.34 | 1.32 | 1.75 |
-| 9 | 1.43 | 1.49 | 2.31 |
-| 10 | 1.43 | 1.60 | 3.36 |
+| 2 | 2.65 | 2.63 | 2.72 |
+| 4 | 2.68 | 2.73 | 2.61 |
+| 6 | 2.30 | 2.47 | 2.62 |
+| 8 | 2.89 | 3.13 | 3.54 |
+| 9 | 3.14 | 2.83 | 4.95 |
+| 10 | 3.62 | 3.79 | 7.90 |
 
 **Observations:**
 
-- `321_1` and `321_2` are nearly identical — the struct vs integer encoding
-  has negligible effect on BFS cost at this scale.
-- `321_3` diverges at R ≥ 8. Its prebuilt adjacency list must enumerate **all**
-  R × 2^R states and their transitions before BFS starts — this preprocessing
-  cost grows exponentially with R and dominates at large R.
-- At R=10, `321_3` takes 3.36 ms vs 1.43 ms for `321_1` — a 2.3× overhead
-  from preprocessing alone.
+- `321_1` and `321_2` scale moderately from ~2.65 ms at $R=2$ to 3.62–3.79 ms at $R=10$. Computing valid moves and switch actions on-demand explores only reachable states.
+- `321_3` diverges sharply starting at $R \ge 8$, reaching 7.90 ms at $R=10$ (~2.2× higher than `321_1`). This reflects the heavy upfront overhead of iterating over and instantiating edges for all 10,240 theoretical states before starting BFS.
 
 ---
 
@@ -116,36 +109,22 @@ Let **R** = rooms, **D** = doors, **S** = switch connections.
 
 | R | Impl 1 (State struct) | Impl 2 (Integer BFS) | Impl 3 (Prebuilt graph) |
 |---|---|---|---|
-| 4 | 3,852 | 3,832 | 3,800 |
-| 6 | 3,964 | 4,068 | 4,100 |
-| 8 | 4,104 | 3,984 | 4,348 |
-| 10 | 4,208 | 4,040 | 5,316 |
+| 4 | 3,992 | 3,864 | 3,836 |
+| 6 | 3,964 | 4,004 | 3,972 |
+| 8 | 3,844 | 3,984 | 4,180 |
+| 10 | 4,092 | 4,096 | 5,312 |
 
 **Observations:**
 
-- All three grow slowly with R — but `321_3` diverges at large R because
-  the prebuilt adjacency list stores all transitions explicitly in memory,
-  not just the visited and parent arrays.
-- At R=10, `321_3` uses ~5.3 MB vs ~4.1 MB for `321_1` — the extra 1.2 MB
-  is the prebuilt edge list for 10,240 states.
-- `321_2` uses slightly less memory than `321_1` because integer queue entries
-  (4 bytes each) are smaller than struct entries (8 bytes each).
+- `321_1` and `321_2` maintain low, stable memory profiles (~3.8–4.1 MB) across all $R$.
+- `321_3` memory consumption jumps significantly to 5,312 KB (~5.31 MB) at $R=10$ due to allocating explicit adjacency vectors for all 10,240 potential states upfront.
 
 ---
 
 ## Implementation Choice Implications
 
-**Choose `321_1`** when readability matters. Named struct fields (`room`,
-`mask`) make the BFS logic self-documenting and easier to verify for
-correctness.
+**Choose `321_1`** for code clarity and ease of debugging. Explicit struct fields (`room`, `mask`) make state transitions transparent.
 
-**Choose `321_2`** when performance is important. Integer encoding eliminates
-struct-copy overhead in the queue. The measured data shows it is consistently
-equal to or faster than `321_1`.
+**Choose `321_2`** for compact execution. Bit-shift integer state representations reduce memory overhead and avoid struct copying during BFS queue operations.
 
-**Choose `321_3`** when the graph topology is queried multiple times with the
-same R, D, S layout (i.e., many queries on the same physical villa layout).
-Preprocessing separates graph construction from traversal — a cleaner
-design at the cost of higher memory and startup time. The data confirms this
-tradeoff: `321_3` is 2.3× slower to start but once the graph is built, BFS
-traversal is O(V+E) on a standard adjacency list.
+**Choose `321_3`** only if the state graph topology is static and queried across multiple benchmark instances, amortizing the upfront $O(R \cdot 2^R)$ construction penalty.

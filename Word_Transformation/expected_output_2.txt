@@ -1,1 +1,1 @@
-cat bed 3
+cold warm 4

@@ -1,8 +1,13 @@
 1
 
-cat
-cot
-cog
+hit
+hot
+dot
 dog
+cog
+cot
+cat
+bat
+bot
 *
-cat cat
+hit cog

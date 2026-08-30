@@ -1,10 +1,12 @@
 1
 
-cat
-bat
-bet
-bed
-cad
-bad
+cold
+cord
+card
+ward
+warm
+worm
+word
+work
 *
-cat bed
+cold warm

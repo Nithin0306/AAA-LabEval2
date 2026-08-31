@@ -60,11 +60,12 @@ Each problem includes **three distinct C++ implementation strategies**, automate
 - **Detailed Analysis & Graphs:** [`Word_Transformation/report.md`](Word_Transformation/report.md)
 - **Overview:** Find the shortest sequence of single-character word modifications to reach a target word using BFS.
 - **Implementations:**
-  - `429_1.cpp`: On-the-fly $O(V \cdot L)$ pairwise scan per step.
-  - `429_2.cpp`: $O(V^2 \cdot L)$ prebuilt adjacency list representation.
-  - `429_3.cpp`: $O(V \cdot L)$ wildcard pattern map lookup (`h*t -> hot`).
+  - `429_1.cpp`: On-the-fly $O(V \cdot L)$ pairwise scan per step. Total: $O(Q \cdot V^2 \cdot L)$.
+  - `429_2.cpp`: $O(V^2 \cdot L)$ prebuilt adjacency list representation. Total: $O(V^2 \cdot L + Q \cdot (V + E))$.
+  - `429_3.cpp`: Wildcard pattern map lookup (`h*t -> hot`). Total: $O(V \cdot L + Q \cdot (V \cdot L + E))$.
 - **Empirical Results:**
   - As query volume $Q$ increases to 200, `429_1` scales linearly up to **47.07 ms**, whereas `429_2` amortises graph construction to stay virtually flat (**3.90 ms**), and `429_3` grows moderately to **9.05 ms**.
+  - `429_3` is the preferred choice for large dictionaries ($V$) because wildcard map construction ($O(V \cdot L)$) avoids the expensive $O(V^2)$ all-pairs pairwise comparison step required by `429_2`.
 
 ### 2. UVa 10171 — Meeting Prof. Miguel (Weighted Graph)
 - **Problem Statement:** [`docs/p10171.pdf`](docs/p10171.pdf)

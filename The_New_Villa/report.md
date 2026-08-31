@@ -70,8 +70,8 @@ Let **R** = rooms, **D** = doors, **S** = switch connections.
 
 **Observations:**
 
-- The state space grows exponentially with $R$, doubling with each additional room.
-- At $R=10$, there are up to 10,240 reachable state vertices.
+- The state space grows exponentially with R, doubling with each additional room.
+- At R=10, there are up to 10,240 reachable state vertices.
 
 ---
 
@@ -94,8 +94,8 @@ Let **R** = rooms, **D** = doors, **S** = switch connections.
 
 **Observations:**
 
-- `321_1` and `321_2` scale moderately from ~2.65 ms at $R=2$ to 3.62–3.79 ms at $R=10$. Computing valid moves and switch actions on-demand explores only reachable states.
-- `321_3` diverges sharply starting at $R \ge 8$, reaching 7.90 ms at $R=10$ (~2.2× higher than `321_1`). This reflects the heavy upfront overhead of iterating over and instantiating edges for all 10,240 theoretical states before starting BFS.
+- `321_1` and `321_2` scale moderately from ~2.65 ms at R=2 to 3.62–3.79 ms at R=10. Computing valid moves and switch actions on-demand explores only reachable states.
+- `321_3` diverges sharply starting at R ≥ 8, reaching 7.90 ms at R=10 (~2.2× higher than `321_1`). This reflects the heavy upfront overhead of iterating over and instantiating edges for all 10,240 theoretical states before starting BFS.
 
 ---
 
@@ -116,8 +116,8 @@ Let **R** = rooms, **D** = doors, **S** = switch connections.
 
 **Observations:**
 
-- `321_1` and `321_2` maintain low, stable memory profiles (~3.8–4.1 MB) across all $R$.
-- `321_3` memory consumption jumps significantly to 5,312 KB (~5.31 MB) at $R=10$ due to allocating explicit adjacency vectors for all 10,240 potential states upfront.
+- `321_1` and `321_2` maintain low, stable memory profiles (~3.8–4.1 MB) across all R.
+- `321_3` memory consumption jumps significantly to 5,312 KB (~5.31 MB) at R=10 due to allocating explicit adjacency vectors for all 10,240 potential states upfront.
 
 ---
 
@@ -127,4 +127,4 @@ Let **R** = rooms, **D** = doors, **S** = switch connections.
 
 **Choose `321_2`** for compact execution. Bit-shift integer state representations reduce memory overhead and avoid struct copying during BFS queue operations.
 
-**Choose `321_3`** only if the state graph topology is static and queried across multiple benchmark instances, amortizing the upfront $O(R \cdot 2^R)$ construction penalty.
+**Choose `321_3`** only if the state graph topology is static and queried across multiple benchmark instances, amortizing the upfront O(R · 2^R) construction penalty.

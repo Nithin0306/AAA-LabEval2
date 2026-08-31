@@ -60,34 +60,34 @@ Each problem includes **three distinct C++ implementation strategies**, automate
 - **Detailed Analysis & Graphs:** [`Word_Transformation/report.md`](Word_Transformation/report.md)
 - **Overview:** Find the shortest sequence of single-character word modifications to reach a target word using BFS.
 - **Implementations:**
-  - `429_1.cpp`: On-the-fly $O(V \cdot L)$ pairwise scan per step. Total: $O(Q \cdot V^2 \cdot L)$.
-  - `429_2.cpp`: $O(V^2 \cdot L)$ prebuilt adjacency list representation. Total: $O(V^2 \cdot L + Q \cdot (V + E))$.
-  - `429_3.cpp`: Wildcard pattern map lookup (`h*t -> hot`). Total: $O(V \cdot L + Q \cdot (V \cdot L + E))$.
+  - `429_1.cpp`: On-the-fly `O(V · L)` pairwise scan per step. Total: `O(Q · V² · L)`.
+  - `429_2.cpp`: `O(V² · L)` prebuilt adjacency list representation. Total: `O(V² · L + Q · (V + E))`.
+  - `429_3.cpp`: Wildcard pattern map lookup (`h*t -> hot`). Total: `O(V · L + Q · (V · L + E))`.
 - **Empirical Results:**
-  - As query volume $Q$ increases to 200, `429_1` scales linearly up to **47.07 ms**, whereas `429_2` amortises graph construction to stay virtually flat (**3.90 ms**), and `429_3` grows moderately to **9.05 ms**.
-  - `429_3` is the preferred choice for large dictionaries ($V$) because wildcard map construction ($O(V \cdot L)$) avoids the expensive $O(V^2)$ all-pairs pairwise comparison step required by `429_2`.
+  - As query volume `Q` increases to 200, `429_1` scales linearly up to **47.07 ms**, whereas `429_2` amortises graph construction to stay virtually flat (**3.90 ms**), and `429_3` grows moderately to **9.05 ms**.
+  - `429_3` is the preferred choice for large dictionaries (`V`) because wildcard map construction (`O(V · L)`) avoids the expensive `O(V²)` all-pairs pairwise comparison step required by `429_2`.
 
 ### 2. UVa 10171 — Meeting Prof. Miguel (Weighted Graph)
 - **Problem Statement:** [`docs/p10171.pdf`](docs/p10171.pdf)
 - **Detailed Analysis & Graphs:** [`Meeting_Prof_Miguel/report.md`](Meeting_Prof_Miguel/report.md)
 - **Overview:** Compute optimal meeting points minimizing combined travel costs on two independent weighted graphs (Young vs. Mature).
 - **Implementations:**
-  - `10171_1.cpp`: Floyd-Warshall algorithm ($O(V^3)$).
-  - `10171_2.cpp`: Dijkstra's algorithm with priority queue ($O((V + E) \log V)$).
-  - `10171_3.cpp`: Bellman-Ford algorithm with early termination ($O(V \cdot E)$).
+  - `10171_1.cpp`: Floyd-Warshall algorithm (`O(V³)`).
+  - `10171_2.cpp`: Dijkstra's algorithm with priority queue (`O((V + E) log V)`).
+  - `10171_3.cpp`: Bellman-Ford algorithm with early termination (`O(V · E)`).
 - **Empirical Results:**
-  - On sparse graphs ($E=5$), Dijkstra (**3.77 ms**) and Bellman-Ford with early termination (**3.84 ms**) outperform Floyd-Warshall (**5.74 ms** across 50 instances) because Floyd-Warshall always runs $V^3 = 17,576$ inner loop iterations regardless of edge density.
+  - On sparse graphs (`E = 5`), Dijkstra (**3.77 ms**) and Bellman-Ford with early termination (**3.84 ms**) outperform Floyd-Warshall (**5.74 ms** across 50 instances) because Floyd-Warshall always runs V³ = 17,576 inner loop iterations regardless of edge density.
 
 ### 3. UVa 321 — The New Villa (Implicit Graph Mapping)
 - **Problem Statement:** [`docs/p321.pdf`](docs/p321.pdf)
 - **Detailed Analysis & Graphs:** [`The_New_Villa/report.md`](The_New_Villa/report.md)
-- **Overview:** Navigate a house of rooms and light switches, mapping the state space $(room, light\_mask)$ of size $R \times 2^R$ to a shortest-path graph problem.
+- **Overview:** Navigate a house of rooms and light switches, mapping the state space `(room, light_mask)` of size `R × 2^R` to a shortest-path graph problem.
 - **Implementations:**
   - `321_1.cpp`: On-demand BFS using explicit `State` structs.
   - `321_2.cpp`: On-demand BFS using compact integer state encoding (`room * 2^R + mask`).
   - `321_3.cpp`: Prebuilt full explicit state-space adjacency graph prior to BFS traversal.
 - **Empirical Results:**
-  - At $R=10$ (10,240 potential states), `321_3` takes **7.90 ms** and **5.31 MB** RSS memory due to constructing edges for all states upfront, compared to `321_1` (**3.62 ms**, **4.09 MB**) which explores only reachable states on-demand.
+  - At `R = 10` (10,240 potential states), `321_3` takes **7.90 ms** and **5.31 MB** RSS memory due to constructing edges for all states upfront, compared to `321_1` (**3.62 ms**, **4.09 MB**) which explores only reachable states on-demand.
 
 ---
 
